@@ -170,16 +170,56 @@ public class Juego {
 
 	// TODO metodo para mover jugador
 	public String moverJugador(char direccion) {
-		String mensaje = null;
+		
 		boolean hayError;
+		boolean finBucle;
+		StringBuilder sb = new StringBuilder();
 
 		do {
 
 			try {
 
-				hayError = false;
+				hayError=false;
+				finBucle=false;
+				int dado1;
+				int dado2;
+				Elemento vacio = new Elemento(' ');
 
 				if (direccion == 'N') {
+					for (int i = 0; i < jugadores.length && !finBucle; i++) {
+						if (tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador].getCol()].equals
+								(Constantes.getJugadoresLetra(i))) {
+								
+							do {
+								int fuerzaEnemigo = jugadores[i].getFuerza();
+								dado1 = (int) ((jugadores[turnoJugador].getFuerza() * Math.random()) + 1);
+								dado2 = (int) ((fuerzaEnemigo * Math.random()) + 1);
+							} while (dado1==dado2);
+							finBucle = true;
+							if (dado1>dado2) {
+								if (jugadores[i].getPociones()>0) {
+									jugadores[i].setPociones(jugadores[i].getPociones()-1);
+									sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea " 
+									+ jugadores[i].getSimbolo() + " pierde una pocion");
+								}else {
+									if(jugadores[i].getDinero()>0) {
+										jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero()+jugadores[i].getDinero());									
+										sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea "
+										+ jugadores[i].getSimbolo() + " pierde " + jugadores[i].getDinero() + " dineros");
+										jugadores[i].setDinero(0);
+									}else {//en caso de tablero mal, se cambia
+										sb.append(jugadores[i].getSimbolo() + " sa morio");
+										tablero[][j] = vacio;//TODO muerte	
+									}
+								}
+							}
+							
+						}else {
+							if (tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador].getCol()].equals(Constantes.ROCA)) {
+								
+							}
+						}
+					}
 					jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() + 1);
 
 				} else {
@@ -195,32 +235,31 @@ public class Juego {
 						}
 					}
 				}
+	
+		
 
-			} catch (IndexOutOfBoundsException e) {
+			}catch (IndexOutOfBoundsException e) {
 				System.out.println("Límite del mapa");
 				hayError = true;
 			}
 
-		} while (hayError == true);
+			}while (hayError == true);
 
-		return mensaje;
-
-	}
+		return sb.toString();
+		}
 
 	public int getJugadorTurno() {
 		return turnoJugador;
 	}
 
 	// metodo para mostar el ganador
-	public String getGanador() {
-
-		String simboloJugador;
-		simboloJugador = jugadores[turnoJugador].toString();
-		return simboloJugador;
+	public char getGanador() {
+	
+	return jugadores[turnoJugador].getSimbolo();
 
 	}
 
-	public void proximoJugador() {
+	public void proximoJugador() {//TODO gana si tiene todos los dineros
 
 		if (turnoJugador == 0 || turnoJugador == numJugadores) {
 			turnoJugador = 1;
