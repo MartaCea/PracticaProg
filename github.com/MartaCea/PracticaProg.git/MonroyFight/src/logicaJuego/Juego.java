@@ -138,12 +138,12 @@ public class Juego {
 
 		// pinta el tablero
 		for (int i = 0; i < Constantes.ANCHO; i++) {
-			sb.append("------------------------------" + "\n");
+			//sb.append("------------------------------" + "\n");
 			for (int j = 0; j < Constantes.ALTO; j++) {
 				tablero[i][j] = vacio;
 				sb.append(vacio.getSimbolo() + " |");
 			}
-			sb.append("\n");
+			//sb.append("\n");
 		}
 
 		for (int gema = 0; gema < Constantes.NUM_GEMAS; gema++) {
@@ -151,9 +151,13 @@ public class Juego {
 			do {
 				fil = (int) (Math.random() * 10);
 				col = (int) (Math.random() * 10);
+				
+				if(tablero[fil][col].equals(vacio)) {
+					tablero[fil][col] = gemas;
+				}
+				
 			} while (tablero[fil][col].equals(gemas));
-			tablero[fil][col] = gemas;
-			sb.append(gemas.getSimbolo() + " |");
+			//sb.append(gemas.getSimbolo() + " |");
 
 		}
 
