@@ -128,7 +128,6 @@ public class Juego {
 	public String toString() {
 		// StringBuilder porque sino no saldrá todo el tablero
 		StringBuilder sb = new StringBuilder();
-
 		Elemento vacio = new Elemento(' ');
 		Elemento gemas = new Elemento(Constantes.GEMA);
 		Elemento roca = new Elemento(Constantes.ROCA);
