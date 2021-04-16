@@ -781,7 +781,6 @@ public class Juego {
 				}
 				}
 			} catch (IndexOutOfBoundsException e) {
-				System.out.println("Límite del mapa");
 				hayError = true;
 				
 			} catch (JuegoException e) {
