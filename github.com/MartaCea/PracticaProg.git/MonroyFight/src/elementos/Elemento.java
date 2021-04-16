@@ -8,6 +8,10 @@ public class Elemento {
 		this.simbolo = simbolo;
 	}
 
+	public Elemento(char[] jugadores) {
+		// TODO Auto-generated constructor stub
+	}
+
 	public char getSimbolo() {
 		return simbolo;
 	}

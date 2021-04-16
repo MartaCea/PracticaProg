@@ -127,11 +127,13 @@ public class Juego {
 
 	/**
 	 * Creamos el tablero con los objetos (gemas, rocas, etc).
+	 * 
 	 * @return String del tablero con las cosas
 	 */
 	public String toString() {
 		// StringBuilder porque sino no saldrá todo el tablero
 		StringBuilder sb = new StringBuilder();
+		boolean encontrado = false;
 		Elemento vacio = new Elemento(' ');
 		Elemento gemas = new Elemento(Constantes.GEMA);
 		Elemento roca = new Elemento(Constantes.ROCA);
@@ -146,7 +148,7 @@ public class Juego {
 				tablero[i][j] = vacio;
 			}
 		}
-		
+
 		// busca una posicion aleatoria para colocar las gemas
 		do {
 			fil = (int) (Math.random() * 10);
@@ -154,7 +156,7 @@ public class Juego {
 			tablero[fil][col] = gemas;
 			gema++;
 		} while (gema <= Constantes.NUM_GEMAS);
-		
+
 		// busca una posicion aleatoria para colocar las rocas
 		do {
 			fil = (int) (Math.random() * 10);
@@ -163,7 +165,7 @@ public class Juego {
 			rocas++;
 		} while (rocas <= Constantes.NUM_ROCAS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
 				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
-		
+
 		// busca una posicion aleatoria para colocar los pozos
 		do {
 			fil = (int) (Math.random() * 10);
@@ -172,7 +174,7 @@ public class Juego {
 			pozos++;
 		} while (pozos <= Constantes.POZOS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(roca)
 				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
-		
+
 		// busca una posicion aleatoria para colocar las pociones
 		do {
 			fil = (int) (Math.random() * 10);
@@ -182,7 +184,7 @@ public class Juego {
 		} while (pociones <= Constantes.NUM_POCIONES || tablero[fil][col].equals(gemas)
 				|| tablero[fil][col].equals(pozo) || tablero[fil][col].equals(roca)
 				|| tablero[fil][col].equals(dinero));
-		
+
 		// busca una posicion aleatoria para colocar las monedas
 		do {
 			fil = (int) (Math.random() * 10);
@@ -191,6 +193,18 @@ public class Juego {
 			money++;
 		} while (money <= Constantes.NUM_DINERO || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
 				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca));
+
+		Elemento[] player = new Elemento[numJugadores];
+		for (int i = 0; i < numJugadores; i++) {
+			player[i] = jugadores[i];
+			do {
+				fil = (int) (Math.random() * 10);
+				col = (int) (Math.random() * 10);
+				tablero[fil][col] = player[i];
+			} while (tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
+					|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca)
+					|| tablero[fil][col].equals(dinero));
+		}
 
 		for (int i = 0; i < tablero.length; i++) {
 			sb.append("----------------------------------------" + "\n");
@@ -210,7 +224,15 @@ public class Juego {
 								if (tablero[i][j].equals(dinero)) {
 									sb.append(" " + dinero.getSimbolo() + " |");
 								} else {
+									
+									for (int x = 0; x < numJugadores && !encontrado; x++) {
+										if (tablero[i][j].equals(player[x])) {
+											sb.append(" " + Constantes.getJugadoresLetra(x) + " |");
+											encontrado = true;
+										}
+									}
 									sb.append(" " + vacio.getSimbolo() + " |");
+									
 								}
 							}
 						}
@@ -233,7 +255,7 @@ public class Juego {
 
 	// TODO metodo para mover jugador
 	public String moverJugador(char direccion) {
-		
+
 		boolean hayError;
 		boolean finBucle;
 		StringBuilder sb = new StringBuilder();
@@ -242,44 +264,47 @@ public class Juego {
 
 			try {
 
-				hayError=false;
-				finBucle=false;
+				hayError = false;
+				finBucle = false;
 				int dado1;
 				int dado2;
 				Elemento vacio = new Elemento(' ');
 
 				if (direccion == 'N') {
 					for (int i = 0; i < jugadores.length && !finBucle; i++) {
-						if (tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador].getCol()].equals
-								(Constantes.getJugadoresLetra(i))) {
-								
+						if (tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador].getCol()]
+								.equals(Constantes.getJugadoresLetra(i))) {
+
 							do {
 								int fuerzaEnemigo = jugadores[i].getFuerza();
 								dado1 = (int) ((jugadores[turnoJugador].getFuerza() * Math.random()) + 1);
 								dado2 = (int) ((fuerzaEnemigo * Math.random()) + 1);
-							} while (dado1==dado2);
+							} while (dado1 == dado2);
 							finBucle = true;
-							if (dado1>dado2) {
-								if (jugadores[i].getPociones()>0) {
-									jugadores[i].setPociones(jugadores[i].getPociones()-1);
-									sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea " 
-									+ jugadores[i].getSimbolo() + " pierde una pocion");
-								}else {
-									if(jugadores[i].getDinero()>0) {
-										jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero()+jugadores[i].getDinero());									
+							if (dado1 > dado2) {
+								if (jugadores[i].getPociones() > 0) {
+									jugadores[i].setPociones(jugadores[i].getPociones() - 1);
+									sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea "
+											+ jugadores[i].getSimbolo() + " pierde una pocion");
+								} else {
+									if (jugadores[i].getDinero() > 0) {
+										jugadores[turnoJugador].setDinero(
+												jugadores[turnoJugador].getDinero() + jugadores[i].getDinero());
 										sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea "
-										+ jugadores[i].getSimbolo() + " pierde " + jugadores[i].getDinero() + " dineros");
+												+ jugadores[i].getSimbolo() + " pierde " + jugadores[i].getDinero()
+												+ " dineros");
 										jugadores[i].setDinero(0);
-									}else {//en caso de tablero mal, se cambia
+									} else {// en caso de tablero mal, se cambia
 										sb.append(jugadores[i].getSimbolo() + " sa morio");
-										tablero[][j] = vacio;//TODO muerte	
+										// tablero[][j] = vacio;//TODO muerte
 									}
 								}
 							}
-							
-						}else {
-							if (tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador].getCol()].equals(Constantes.ROCA)) {
-								
+
+						} else {
+							if (tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador].getCol()]
+									.equals(Constantes.ROCA)) {
+
 							}
 						}
 					}
@@ -298,18 +323,16 @@ public class Juego {
 						}
 					}
 				}
-	
-		
 
-			}catch (IndexOutOfBoundsException e) {
+			} catch (IndexOutOfBoundsException e) {
 				System.out.println("Límite del mapa");
 				hayError = true;
 			}
 
-			}while (hayError == true);
+		} while (hayError == true);
 
 		return sb.toString();
-		}
+	}
 
 	public int getJugadorTurno() {
 		return turnoJugador;
