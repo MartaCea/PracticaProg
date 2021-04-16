@@ -125,8 +125,10 @@ public class Juego {
 		return sb.toString();
 	}
 
-	// Esta hecho el dibujo del tablero vacío sin las gemas, rocas, etc. Para ver
-	// como se vería
+	/**
+	 * Creamos el tablero con los objetos (gemas, rocas, etc).
+	 * @return String del tablero con las cosas
+	 */
 	public String toString() {
 		// StringBuilder porque sino no saldrá todo el tablero
 		StringBuilder sb = new StringBuilder();
@@ -144,6 +146,7 @@ public class Juego {
 				tablero[i][j] = vacio;
 			}
 		}
+		
 		// busca una posicion aleatoria para colocar las gemas
 		do {
 			fil = (int) (Math.random() * 10);
@@ -151,7 +154,8 @@ public class Juego {
 			tablero[fil][col] = gemas;
 			gema++;
 		} while (gema <= Constantes.NUM_GEMAS);
-
+		
+		// busca una posicion aleatoria para colocar las rocas
 		do {
 			fil = (int) (Math.random() * 10);
 			col = (int) (Math.random() * 10);
@@ -159,7 +163,8 @@ public class Juego {
 			rocas++;
 		} while (rocas <= Constantes.NUM_ROCAS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
 				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
-
+		
+		// busca una posicion aleatoria para colocar los pozos
 		do {
 			fil = (int) (Math.random() * 10);
 			col = (int) (Math.random() * 10);
@@ -167,7 +172,8 @@ public class Juego {
 			pozos++;
 		} while (pozos <= Constantes.POZOS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(roca)
 				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
-
+		
+		// busca una posicion aleatoria para colocar las pociones
 		do {
 			fil = (int) (Math.random() * 10);
 			col = (int) (Math.random() * 10);
@@ -176,7 +182,8 @@ public class Juego {
 		} while (pociones <= Constantes.NUM_POCIONES || tablero[fil][col].equals(gemas)
 				|| tablero[fil][col].equals(pozo) || tablero[fil][col].equals(roca)
 				|| tablero[fil][col].equals(dinero));
-
+		
+		// busca una posicion aleatoria para colocar las monedas
 		do {
 			fil = (int) (Math.random() * 10);
 			col = (int) (Math.random() * 10);
