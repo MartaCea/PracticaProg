@@ -1,5 +1,7 @@
 package logicaJuego;
 
+import java.util.Iterator;
+
 import elementos.Elemento;
 import elementos.Elfo;
 import elementos.Guerrero;
@@ -135,35 +137,86 @@ public class Juego {
 		Elemento pocion = new Elemento(Constantes.POCION);
 		Elemento dinero = new Elemento(Constantes.DINERO);
 		int fil, col;
+		int gema = 0, money = 0, rocas = 0, pozos = 0, pociones = 0;
 
-		// pinta el tablero
-		for (int i = 0; i < Constantes.ANCHO; i++) {
-			//sb.append("------------------------------" + "\n");
-			for (int j = 0; j < Constantes.ALTO; j++) {
+		for (int i = 0; i < tablero.length; i++) {
+			for (int j = 0; j < tablero[i].length; j++) {
 				tablero[i][j] = vacio;
-				sb.append(vacio.getSimbolo() + " |");
 			}
-			//sb.append("\n");
 		}
+		// busca una posicion aleatoria para colocar las gemas
+		do {
+			fil = (int) (Math.random() * 10);
+			col = (int) (Math.random() * 10);
+			tablero[fil][col] = gemas;
+			gema++;
+		} while (gema <= Constantes.NUM_GEMAS);
 
-		for (int gema = 0; gema < Constantes.NUM_GEMAS; gema++) {
+		do {
+			fil = (int) (Math.random() * 10);
+			col = (int) (Math.random() * 10);
+			tablero[fil][col] = roca;
+			rocas++;
+		} while (rocas <= Constantes.NUM_ROCAS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
+				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
 
-			do {
-				fil = (int) (Math.random() * 10);
-				col = (int) (Math.random() * 10);
-				
-				if(tablero[fil][col].equals(vacio)) {
-					tablero[fil][col] = gemas;
+		do {
+			fil = (int) (Math.random() * 10);
+			col = (int) (Math.random() * 10);
+			tablero[fil][col] = pozo;
+			pozos++;
+		} while (pozos <= Constantes.POZOS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(roca)
+				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
+
+		do {
+			fil = (int) (Math.random() * 10);
+			col = (int) (Math.random() * 10);
+			tablero[fil][col] = pocion;
+			pociones++;
+		} while (pociones <= Constantes.NUM_POCIONES || tablero[fil][col].equals(gemas)
+				|| tablero[fil][col].equals(pozo) || tablero[fil][col].equals(roca)
+				|| tablero[fil][col].equals(dinero));
+
+		do {
+			fil = (int) (Math.random() * 10);
+			col = (int) (Math.random() * 10);
+			tablero[fil][col] = dinero;
+			money++;
+		} while (money <= Constantes.NUM_DINERO || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
+				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca));
+
+		for (int i = 0; i < tablero.length; i++) {
+			sb.append("----------------------------------------" + "\n");
+			for (int j = 0; j < tablero[i].length; j++) {
+				if (tablero[i][j].equals(gemas)) {
+					sb.append(" " + gemas.getSimbolo() + " |");
+				} else {
+					if (tablero[i][j].equals(roca)) {
+						sb.append(" " + roca.getSimbolo() + " |");
+					} else {
+						if (tablero[i][j].equals(pozo)) {
+							sb.append(" " + pozo.getSimbolo() + " |");
+						} else {
+							if (tablero[i][j].equals(pocion)) {
+								sb.append(" " + pocion.getSimbolo() + " |");
+							} else {
+								if (tablero[i][j].equals(dinero)) {
+									sb.append(" " + dinero.getSimbolo() + " |");
+								} else {
+									sb.append(" " + vacio.getSimbolo() + " |");
+								}
+							}
+						}
+					}
 				}
-				
-			} while (tablero[fil][col].equals(gemas));
-			//sb.append(gemas.getSimbolo() + " |");
 
+			}
+			sb.append("\n");
 		}
 
 		return sb.toString();
 	}
-	
+
 	// getter movimientos del jugador
 	public int getNumeroMovimientosJugador() {
 		int dado;
@@ -257,12 +310,12 @@ public class Juego {
 
 	// metodo para mostar el ganador
 	public char getGanador() {
-	
-	return jugadores[turnoJugador].getSimbolo();
+
+		return jugadores[turnoJugador].getSimbolo();
 
 	}
 
-	public void proximoJugador() {//TODO gana si tiene todos los dineros
+	public void proximoJugador() {// TODO gana si tiene todos los dineros
 
 		if (turnoJugador == 0 || turnoJugador == numJugadores) {
 			turnoJugador = 1;
