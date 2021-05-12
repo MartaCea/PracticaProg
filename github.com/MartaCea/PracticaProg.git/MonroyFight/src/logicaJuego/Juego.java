@@ -1,7 +1,5 @@
 package logicaJuego;
 
-import java.util.Iterator;
-
 import elementos.Elemento;
 import elementos.Elfo;
 import elementos.Guerrero;
@@ -17,6 +15,7 @@ public class Juego {
 	private Jugador[] jugadores;
 	private int numJugadores;
 	private boolean terminado;
+	private static boolean iniTablero = false;
 
 	public Juego(int alto, int ancho, int jugadores) throws JuegoException {
 		super();
@@ -194,55 +193,63 @@ public class Juego {
 		} while (money <= Constantes.NUM_DINERO || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
 				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca));
 
-		Elemento[] player = new Elemento[numJugadores];
+		// Elemento[] player = new Elemento[numJugadores];
 		for (int i = 0; i < numJugadores; i++) {
-			player[i] = jugadores[i];
+			// player[i] = jugadores[i];
 			do {
 				fil = (int) (Math.random() * 10);
 				col = (int) (Math.random() * 10);
-				tablero[fil][col] = player[i];
+				tablero[fil][col] = jugadores[i];
+				jugadores[i].setFil(fil);
+				jugadores[i].setCol(col);
 			} while (tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
 					|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca)
 					|| tablero[fil][col].equals(dinero));
 		}
-
+		int x = 0;
 		for (int i = 0; i < tablero.length; i++) {
 			sb.append("----------------------------------------" + "\n");
 			for (int j = 0; j < tablero[i].length; j++) {
-				if (tablero[i][j].equals(gemas)) {
-					sb.append(" " + gemas.getSimbolo() + " |");
-				} else {
-					if (tablero[i][j].equals(roca)) {
-						sb.append(" " + roca.getSimbolo() + " |");
+				while (x < numJugadores && !encontrado) {
+					if (tablero[i][j].equals(jugadores[x])) {
+						sb.append(" " + Constantes.getJugadoresLetra(x) + " |");
+						encontrado = true;
+					}
+					x++;
+				}
+				if (!encontrado) {
+					x = 0;
+					if (tablero[i][j].equals(gemas)) {
+						sb.append(" " + gemas.getSimbolo() + " |");
 					} else {
-						if (tablero[i][j].equals(pozo)) {
-							sb.append(" " + pozo.getSimbolo() + " |");
+						if (tablero[i][j].equals(roca)) {
+							sb.append(" " + roca.getSimbolo() + " |");
 						} else {
-							if (tablero[i][j].equals(pocion)) {
-								sb.append(" " + pocion.getSimbolo() + " |");
+							if (tablero[i][j].equals(pozo)) {
+								sb.append(" " + pozo.getSimbolo() + " |");
 							} else {
-								if (tablero[i][j].equals(dinero)) {
-									sb.append(" " + dinero.getSimbolo() + " |");
+								if (tablero[i][j].equals(pocion)) {
+									sb.append(" " + pocion.getSimbolo() + " |");
 								} else {
-									
-									for (int x = 0; x < numJugadores && !encontrado; x++) {
-										if (tablero[i][j].equals(player[x])) {
-											sb.append(" " + Constantes.getJugadoresLetra(x) + " |");
-											encontrado = true;
-										}
+									if (tablero[i][j].equals(dinero)) {
+										sb.append(" " + dinero.getSimbolo() + " |");
+									}else {
+										sb.append(" " + vacio.getSimbolo() + " |");
 									}
-									sb.append(" " + vacio.getSimbolo() + " |");
-									
 								}
 							}
+							
 						}
+						
 					}
+					
+				} else {
+					encontrado = false;
 				}
-
 			}
 			sb.append("\n");
 		}
-
+		iniTablero = true;
 		return sb.toString();
 	}
 
@@ -253,14 +260,21 @@ public class Juego {
 		return dado;
 	}
 
-	// TODO metodo para mover jugador
+	/**
+	 * En este método movemos el jugador hacia la dirección que meten por el
+	 * parámetro
+	 * 
+	 * @param direccion
+	 * @return
+	 * @throws JuegoException
+	 */
 	public String moverJugador(char direccion) throws JuegoException {
-		
+
 		boolean hayError = false;
 		boolean finBucle;
 		StringBuilder sb = new StringBuilder();
 		char caracterCasillaDeMovimiento;
-		
+
 		do {
 			try {
 				hayError = false;
@@ -271,539 +285,595 @@ public class Juego {
 				int fuerzaEnemigo = 0, pocionesEnemigo = 0, dineroEnemigo = 0, i, tuDado, dadoEnemigo;
 				boolean salida;
 				String mensaje;
-				
+
 				switch (direccion) {
 				case 'N':
-					caracterCasillaDeMovimiento=tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()].getSimbolo();//cambiarfilcol
-					
-					
-					switch(caracterCasillaDeMovimiento) {
+					caracterCasillaDeMovimiento = tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+							.getCol()].getSimbolo();// cambiarfilcol
+
+					switch (caracterCasillaDeMovimiento) {
 					case 'A':
-						mensaje=combate('A','N');
-						
+						mensaje = combate('A', 'N');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'B':
 
-						mensaje=combate('B','N');
-						
+						mensaje = combate('B', 'N');
+
 						sb.append(mensaje);
 						break;
-					
+
 					case 'C':
-						mensaje=combate('C','N');
-						
+						mensaje = combate('C', 'N');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'E':
-						mensaje=combate('E','N');
-						
+						mensaje = combate('E', 'N');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'F':
-						mensaje=combate('F','N');
-						
+						mensaje = combate('F', 'N');
+
 						sb.append(mensaje);
 						break;
-						
-					case 'G'://gema
-						
+
+					case 'G':// gema
+
 						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;
-						
-						tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()+1);//cambiar filcol
-						
-						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()+1);
-						
-						sb.append("Has cogido una gema" + "\n");//cambiar obj
-						
+
+						tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() + 1);// cambiar filcol
+
+						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() + 1);
+
+						sb.append("Has cogido una gema" + "\n");// cambiar obj
+
 						break;
-						
-					case 'D'://dinero
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()+1);//cambiar filcol
-						
-						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero()+1);//cambiar obj
-						
-						sb.append("Has cogido un dinero" + "\n");//cambiar obj
-						
+
+					case 'D':// dinero
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() + 1);// cambiar filcol
+
+						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero() + 1);// cambiar obj
+
+						sb.append("Has cogido un dinero" + "\n");// cambiar obj
+
 						break;
-						
-					case 'P'://pocion
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()+1);//cambiar filcol
-						
-						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones()+1);//cambiar obj
-						
-						sb.append("Has cogido una poti" + "\n");//cambiar obj
-						
+
+					case 'P':// pocion
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() + 1);// cambiar filcol
+
+						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones() + 1);// cambiar obj
+
+						sb.append("Has cogido una poti" + "\n");// cambiar obj
+
 						break;
-						
-					case 'Z'://pozo
+
+					case 'Z':// pozo
 						int dadoPozo;
 						do {
 							tuDado = (int) ((jugadores[turnoJugador].getFuerza() * Math.random()) + 1);
 							dadoPozo = (int) ((Math.random() * 5) + 1);
-						} while (tuDado==dadoPozo);
-						
-						if (tuDado>dadoPozo) {
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()+1);//cambiar filcol
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
-							sb.append("Has sellado el pozo" + "\n");//cambiar obj
-							
-						}else {
+						} while (tuDado == dadoPozo);
+
+						if (tuDado > dadoPozo) {
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+									.getCol()] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() + 1);// cambiar filcol
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
+							sb.append("Has sellado el pozo" + "\n");// cambiar obj
+
+						} else {
 							sb.append("No has sido capaz de superar la magia del pozo");
 						}
-						
+
 						break;
-						
-					case 'R'://roca
+
+					case 'R':// roca
 						do {
-							if (jugadores[turnoJugador].getGemas()<1) 
+							if (jugadores[turnoJugador].getGemas() < 1)
 								throw new JuegoException("No tienes gemas");
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()+1);//cambiar filcol
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+									.getCol()] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() + 1);// cambiar filcol
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
 							sb.append("Has destruido una roca" + "\n");
-							
+
 						} while (hayError);
-						
+
 						break;
-						
+
 					default:
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol	
-						tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+						tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
 						break;
 					}
-					
+
 				case 'S':
-					caracterCasillaDeMovimiento=tablero[jugadores[turnoJugador].getFil()-1][jugadores[turnoJugador].getCol()].getSimbolo();//cambiarfilcol
-					
-					
-					switch(caracterCasillaDeMovimiento) {
+					caracterCasillaDeMovimiento = tablero[jugadores[turnoJugador].getFil() - 1][jugadores[turnoJugador]
+							.getCol()].getSimbolo();// cambiarfilcol
+
+					switch (caracterCasillaDeMovimiento) {
 					case 'A':
-						mensaje=combate('A','S');
-						
+						mensaje = combate('A', 'S');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'B':
 
-						mensaje=combate('B','S');
-						
+						mensaje = combate('B', 'S');
+
 						sb.append(mensaje);
 						break;
-					
+
 					case 'C':
-						mensaje=combate('C','S');
-						
+						mensaje = combate('C', 'S');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'E':
-						mensaje=combate('E','S');
-						
+						mensaje = combate('E', 'S');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'F':
-						mensaje=combate('F','S');
-						
+						mensaje = combate('F', 'S');
+
 						sb.append(mensaje);
 						break;
-						
-					case 'G'://gema
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()-1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()-1);//cambiar filcol
-						
-						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()+1);
-						
-						sb.append("Has cogido una gema" + "\n");//cambiar obj
-						
+
+					case 'G':// gema
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil() - 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() - 1);// cambiar filcol
+
+						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() + 1);
+
+						sb.append("Has cogido una gema" + "\n");// cambiar obj
+
 						break;
-						
-					case 'D'://dinero
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()-1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()-1);//cambiar filcol
-						
-						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero()+1);//cambiar obj
-						
-						sb.append("Has cogido un dinero" + "\n");//cambiar obj
-						
+
+					case 'D':// dinero
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil() - 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() - 1);// cambiar filcol
+
+						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero() + 1);// cambiar obj
+
+						sb.append("Has cogido un dinero" + "\n");// cambiar obj
+
 						break;
-						
-					case 'P'://pocion
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()-1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()-1);//cambiar filcol
-						
-						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones()+1);//cambiar obj
-						
-						sb.append("Has cogido una poti" + "\n");//cambiar obj
-						
+
+					case 'P':// pocion
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil() - 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() - 1);// cambiar filcol
+
+						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones() + 1);// cambiar obj
+
+						sb.append("Has cogido una poti" + "\n");// cambiar obj
+
 						break;
-						
-					case 'Z'://pozo
+
+					case 'Z':// pozo
 						int dadoPozo;
 						do {
 							tuDado = (int) ((jugadores[turnoJugador].getFuerza() * Math.random()) + 1);
 							dadoPozo = (int) ((Math.random() * 5) + 1);
-						} while (tuDado==dadoPozo);
-						
-						if (tuDado>dadoPozo) {
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()-1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()-1);//cambiar filcol
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
+						} while (tuDado == dadoPozo);
+
+						if (tuDado > dadoPozo) {
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil() - 1][jugadores[turnoJugador]
+									.getCol()] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() - 1);// cambiar filcol
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
 							sb.append("Has sellado el pozo " + "\n");
-							
-						}else {
+
+						} else {
 							sb.append("No has sido capaz de superar la magia del pozo");
 						}
-						
+
 						break;
-						
-					case 'R'://roca
+
+					case 'R':// roca
 						do {
-							if (jugadores[turnoJugador].getGemas()<1) 
+							if (jugadores[turnoJugador].getGemas() < 1)
 								throw new JuegoException("No tienes gemas");
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil()-1);//cambiar filcol
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador]
+									.getCol()] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setFil(jugadores[turnoJugador].getFil() - 1);// cambiar filcol
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
 							sb.append("Has destruido una roca" + "\n");
-							
+
 						} while (hayError);
-						
+
 						break;
-						
+
 					default:
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol	
-						tablero[jugadores[turnoJugador].getFil()-1][jugadores[turnoJugador].getCol()] = caracterJugador;//cambiar filcol
-						
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+						tablero[jugadores[turnoJugador].getFil() - 1][jugadores[turnoJugador]
+								.getCol()] = caracterJugador;// cambiar filcol
+
 						break;
-				}
+					}
 				case 'E':
-					caracterCasillaDeMovimiento=tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1].getSimbolo();//cambiarfilcol
-					
-					
-					switch(caracterCasillaDeMovimiento) {
+					caracterCasillaDeMovimiento = tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador]
+							.getCol() + 1].getSimbolo();// cambiarfilcol
+
+					switch (caracterCasillaDeMovimiento) {
 					case 'A':
-						mensaje=combate('A','E');
-						
+						mensaje = combate('A', 'E');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'B':
 
-						mensaje=combate('B','E');
-						
+						mensaje = combate('B', 'E');
+
 						sb.append(mensaje);
 						break;
-					
+
 					case 'C':
-						mensaje=combate('C','E');
-						
+						mensaje = combate('C', 'E');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'E':
-						mensaje=combate('E','E');
-						
+						mensaje = combate('E', 'E');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'F':
-						mensaje=combate('F','E');
-						
+						mensaje = combate('F', 'E');
+
 						sb.append(mensaje);
 						break;
-						
-					case 'G'://gema
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()+1);//cambiar filcol
-						
-						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()+1);
-						
-						sb.append("Has cogido una gema" + "\n");//cambiar obj
-						
+
+					case 'G':// gema
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								+ 1] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() + 1);// cambiar filcol
+
+						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() + 1);
+
+						sb.append("Has cogido una gema" + "\n");// cambiar obj
+
 						break;
-						
-					case 'D'://dinero
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()+1);//cambiar filcol
-						
-						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero()+1);//cambiar obj
-						
-						sb.append("Has cogido un dinero" + "\n");//cambiar obj
-						
+
+					case 'D':// dinero
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								+ 1] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() + 1);// cambiar filcol
+
+						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero() + 1);// cambiar obj
+
+						sb.append("Has cogido un dinero" + "\n");// cambiar obj
+
 						break;
-						
-					case 'P'://pocion
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()+1);//cambiar filcol
-						
-						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones()+1);//cambiar obj
-						
-						sb.append("Has cogido una poti" + "\n");//cambiar obj
-						
+
+					case 'P':// pocion
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								+ 1] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() + 1);// cambiar filcol
+
+						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones() + 1);// cambiar obj
+
+						sb.append("Has cogido una poti" + "\n");// cambiar obj
+
 						break;
-						
-					case 'Z'://pozo
+
+					case 'Z':// pozo
 						int dadoPozo;
 						do {
 							tuDado = (int) ((jugadores[turnoJugador].getFuerza() * Math.random()) + 1);
 							dadoPozo = (int) ((Math.random() * 5) + 1);
-						} while (tuDado==dadoPozo);
-						
-						if (tuDado>dadoPozo) {
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()+1);
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
+						} while (tuDado == dadoPozo);
+
+						if (tuDado > dadoPozo) {
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+									+ 1] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() + 1);
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
 							sb.append("Has sellado el pozo" + "\n");
-							
-						}else {
+
+						} else {
 							sb.append("No has sido capaz de superar la magia del pozo");
 						}
-						
+
 						break;
-						
-					case 'R'://roca
+
+					case 'R':// roca
 						do {
-							if (jugadores[turnoJugador].getGemas()<1) 
+							if (jugadores[turnoJugador].getGemas() < 1)
 								throw new JuegoException("No tienes gemas");
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()+1);//cambiar filcol
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+									+ 1] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() + 1);// cambiar filcol
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
 							sb.append("Has destruido una roca" + "\n");
-							
+
 						} while (hayError);
-						
+
 						break;
-						
+
 					default:
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol	
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = caracterJugador;//cambiar filcol
-					break;
-					}	
-				case'O':
-					caracterCasillaDeMovimiento=tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1].getSimbolo();//cambiarfilcol
-					
-					switch(caracterCasillaDeMovimiento) {
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								+ 1] = caracterJugador;// cambiar filcol
+						break;
+					}
+				case 'O':
+					caracterCasillaDeMovimiento = tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador]
+							.getCol() + 1].getSimbolo();// cambiarfilcol
+
+					switch (caracterCasillaDeMovimiento) {
 					case 'A':
-						mensaje=combate('A','O');
-						
+						mensaje = combate('A', 'O');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'B':
 
-						mensaje=combate('B','O');
-						
+						mensaje = combate('B', 'O');
+
 						sb.append(mensaje);
 						break;
-					
+
 					case 'C':
-						mensaje=combate('C','O');
-						
+						mensaje = combate('C', 'O');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'E':
-						mensaje=combate('E','O');
-						
+						mensaje = combate('E', 'O');
+
 						sb.append(mensaje);
 						break;
-						
+
 					case 'F':
-						mensaje=combate('F','O');
-						
+						mensaje = combate('F', 'O');
+
 						sb.append(mensaje);
 						break;
-						
-					case 'G'://gema
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()-1] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()-1);//cambiar filcol
-						
-						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()+1);
-						
-						sb.append("Has cogido una gema" + "\n");//cambiar obj
-						
+
+					case 'G':// gema
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								- 1] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() - 1);// cambiar filcol
+
+						jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() + 1);
+
+						sb.append("Has cogido una gema" + "\n");// cambiar obj
+
 						break;
-						
-					case 'D'://dinero
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()-1] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()-1);//cambiar filcol
-						
-						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero()+1);//cambiar obj
-						
-						sb.append("Has cogido un dinero" + "\n");//cambiar obj
-						
+
+					case 'D':// dinero
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								- 1] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() - 1);// cambiar filcol
+
+						jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero() + 1);// cambiar obj
+
+						sb.append("Has cogido un dinero" + "\n");// cambiar obj
+
 						break;
-						
-					case 'P'://pocion
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-						
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()-1] = caracterJugador;//cambiar filcol
-						
-						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()-1);//cambiar filcol
-						
-						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones()+1);//cambiar obj
-						
-						sb.append("Has cogido una poti" + "\n");//cambiar obj
-						
+
+					case 'P':// pocion
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								- 1] = caracterJugador;// cambiar filcol
+
+						jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() - 1);// cambiar filcol
+
+						jugadores[turnoJugador].setPociones(jugadores[turnoJugador].getPociones() + 1);// cambiar obj
+
+						sb.append("Has cogido una poti" + "\n");// cambiar obj
+
 						break;
-						
-					case 'Z'://pozo
+
+					case 'Z':// pozo
 						int dadoPozo;
 						do {
 							tuDado = (int) ((jugadores[turnoJugador].getFuerza() * Math.random()) + 1);
 							dadoPozo = (int) ((Math.random() * 5) + 1);
-						} while (tuDado==dadoPozo);
-						
-						if (tuDado>dadoPozo) {
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()-1);
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
+						} while (tuDado == dadoPozo);
+
+						if (tuDado > dadoPozo) {
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+									+ 1] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() - 1);
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
 							sb.append("Has sellado el pozo" + "\n");
-							
-						}else {
+
+						} else {
 							sb.append("No has sido capaz de superar la magia del pozo");
 						}
-						
+
 						break;
-						
-					case 'R'://roca
+
+					case 'R':// roca
 						do {
-							if (jugadores[turnoJugador].getGemas()<1) 
+							if (jugadores[turnoJugador].getGemas() < 1)
 								throw new JuegoException("No tienes gemas");
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol
-							
-							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()-1] = caracterJugador;//cambiar filcol
-							
-							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol()-1);//cambiar filcol
-							
-							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas()-1);
-							
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																												// filcol
+
+							tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+									- 1] = caracterJugador;// cambiar filcol
+
+							jugadores[turnoJugador].setCol(jugadores[turnoJugador].getCol() - 1);// cambiar filcol
+
+							jugadores[turnoJugador].setGemas(jugadores[turnoJugador].getGemas() - 1);
+
 							sb.append("Has destruido una roca" + "\n");
-							
+
 						} while (hayError);
-						
+
 						break;
-						
+
 					default:
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiar filcol	
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()-1] = caracterJugador;//cambiar filcol
-					break;
-				}
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiar
+																											// filcol
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()
+								- 1] = caracterJugador;// cambiar filcol
+						break;
+					}
 				}
 			} catch (IndexOutOfBoundsException e) {
 				hayError = true;
-				
+
 			} catch (JuegoException e) {
-				hayError=true;
+				hayError = true;
 			}
-			
+
 		} while (hayError);
 
 		return sb.toString();
-		}
+	}
 
 	public int getJugadorTurno() {
 		return turnoJugador;
 	}
 
-	// metodo para mostar el ganador
+	/**
+	 * Devuelve el símbolo del ganador de la partida
+	 * 
+	 * @return símboloJugador
+	 */
 	public char getGanador() {
-	
-	return jugadores[turnoJugador].getSimbolo();
+
+		return jugadores[turnoJugador].getSimbolo();
 
 	}
 
-	public void proximoJugador() {//TODO gana si tiene todos los dineros
+	/**
+	 * A qué jugador le toca en ese instante En caso de que haya un ganador, termina
+	 * la partida
+	 */
+	public void proximoJugador() {// TODO gana si tiene todos los dineros
 
 		if (turnoJugador == 0 || turnoJugador == numJugadores) {
 			turnoJugador = 1;
@@ -823,6 +893,14 @@ public class Juego {
 		}
 
 	}
+
+	/**
+	 * Ocupa todas las posibilidades en el combate
+	 * 
+	 * @param caracterEnemigoAComparar
+	 * @param direccion
+	 * @return
+	 */
 	public String combate(char caracterEnemigoAComparar, char direccion) {
 		int i = -1;
 		boolean salida;
@@ -830,84 +908,85 @@ public class Juego {
 		int pocionesEnemigo = 0;
 		int dineroEnemigo = 0;
 		Elemento vacio = new Elemento(' ');
-		StringBuilder sb=new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		do {
 			i++;
-			salida=false;
+			salida = false;
 			char caracterEnemigo = jugadores[i].getSimbolo();
-			if (caracterEnemigo==caracterEnemigoAComparar) {//cambiar a
-				fuerzaEnemigo=jugadores[i].getFuerza();
-				pocionesEnemigo=jugadores[i].getPociones();
-				dineroEnemigo=jugadores[i].getDinero();
-				salida=true;
+			if (caracterEnemigo == caracterEnemigoAComparar) {// cambiar a
+				fuerzaEnemigo = jugadores[i].getFuerza();
+				pocionesEnemigo = jugadores[i].getPociones();
+				dineroEnemigo = jugadores[i].getDinero();
+				salida = true;
 			}
-		} while (i<jugadores.length && !salida);
-		
+		} while (i < jugadores.length && !salida);
+
 		int tuDado;
 		int dadoEnemigo;
 		do {
 			tuDado = (int) ((jugadores[turnoJugador].getFuerza() * Math.random()) + 1);
 			dadoEnemigo = (int) ((fuerzaEnemigo * Math.random()) + 1);
-		} while (tuDado==dadoEnemigo);
-		
-		sb.append(jugadores[turnoJugador].getSimbolo() + " ha sacado " + tuDado + ", " + caracterEnemigoAComparar + " ha sacado " + dadoEnemigo + "\n");//cambiar a
-		
-		if(tuDado>dadoEnemigo) {
-			if (pocionesEnemigo>0) {
-				jugadores[i].setPociones(pocionesEnemigo-1);
-				sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea " 
-				+ caracterEnemigoAComparar + " pierde una pocion \n");//cambiar a
-			}else {
-				if(dineroEnemigo>0) {
-					jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero()+dineroEnemigo);									
-					sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea "
-					+ caracterEnemigoAComparar + " pierde " + dineroEnemigo + " dineros \n");//cambiar a
+		} while (tuDado == dadoEnemigo);
+
+		sb.append(jugadores[turnoJugador].getSimbolo() + " ha sacado " + tuDado + ", " + caracterEnemigoAComparar
+				+ " ha sacado " + dadoEnemigo + "\n");// cambiar a
+
+		if (tuDado > dadoEnemigo) {
+			if (pocionesEnemigo > 0) {
+				jugadores[i].setPociones(pocionesEnemigo - 1);
+				sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea " + caracterEnemigoAComparar
+						+ " pierde una pocion \n");// cambiar a
+			} else {
+				if (dineroEnemigo > 0) {
+					jugadores[turnoJugador].setDinero(jugadores[turnoJugador].getDinero() + dineroEnemigo);
+					sb.append(jugadores[turnoJugador].getSimbolo() + " ha ganado la pelea " + caracterEnemigoAComparar
+							+ " pierde " + dineroEnemigo + " dineros \n");// cambiar a
 					jugadores[i].setDinero(0);
-				}else {
+				} else {
 					switch (direccion) {
 					case 'N': {
-						sb.append(caracterEnemigoAComparar + " sa morio \n");//cambiar a
-						tablero[jugadores[turnoJugador].getFil()+1][jugadores[turnoJugador].getCol()] = vacio;//cambiarfilcol
+						sb.append(caracterEnemigoAComparar + " sa morio \n");// cambiar a
+						tablero[jugadores[turnoJugador].getFil() + 1][jugadores[turnoJugador].getCol()] = vacio;// cambiarfilcol
 						numJugadores--;
 						break;
 					}
-					case 'S':{
-						sb.append(caracterEnemigoAComparar + " sa morio \n");//cambiar a
-						tablero[jugadores[turnoJugador].getFil()-1][jugadores[turnoJugador].getCol()] = vacio;//cambiarfilcol
+					case 'S': {
+						sb.append(caracterEnemigoAComparar + " sa morio \n");// cambiar a
+						tablero[jugadores[turnoJugador].getFil() - 1][jugadores[turnoJugador].getCol()] = vacio;// cambiarfilcol
 						numJugadores--;
 						break;
 					}
-					case 'E':{
-						sb.append(caracterEnemigoAComparar + " sa morio \n");//cambiar a
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()+1] = vacio;//cambiarfilcol
+					case 'E': {
+						sb.append(caracterEnemigoAComparar + " sa morio \n");// cambiar a
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol() + 1] = vacio;// cambiarfilcol
 						numJugadores--;
 						break;
 					}
-					case 'O':{
-						sb.append(caracterEnemigoAComparar + " sa morio \n");//cambiar a
-						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()-1] = vacio;//cambiarfilcol
+					case 'O': {
+						sb.append(caracterEnemigoAComparar + " sa morio \n");// cambiar a
+						tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol() - 1] = vacio;// cambiarfilcol
 						numJugadores--;
 						break;
 					}
-						
+
 					}
-						
+
 				}
 			}
-		}else {
-			if (jugadores[turnoJugador].getPociones()>0) { 
-				jugadores[turnoJugador].setPociones(jugadores[i].getPociones()-1); 
-				sb.append(caracterEnemigoAComparar + " ha ganado la pelea " 
-				+ jugadores[turnoJugador].getSimbolo() + " pierde una pocion \n"); //cambiar a
-			}else {
-				if(jugadores[turnoJugador].getDinero()>0) {
-					jugadores[i].setDinero(jugadores[i].getDinero()+jugadores[turnoJugador].getDinero());									
-					sb.append(caracterEnemigoAComparar +" ha ganado la pelea "
-					+ jugadores[turnoJugador].getSimbolo() + " pierde " + jugadores[turnoJugador].getDinero() + " dineros \n");
-					jugadores[turnoJugador].setDinero(0); 
-				}else {
-					sb.append(jugadores[turnoJugador].getSimbolo() + " sa morio \n"); 
-					tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;//cambiarfilcol
+		} else {
+			if (jugadores[turnoJugador].getPociones() > 0) {
+				jugadores[turnoJugador].setPociones(jugadores[i].getPociones() - 1);
+				sb.append(caracterEnemigoAComparar + " ha ganado la pelea " + jugadores[turnoJugador].getSimbolo()
+						+ " pierde una pocion \n"); // cambiar a
+			} else {
+				if (jugadores[turnoJugador].getDinero() > 0) {
+					jugadores[i].setDinero(jugadores[i].getDinero() + jugadores[turnoJugador].getDinero());
+					sb.append(caracterEnemigoAComparar + " ha ganado la pelea " + jugadores[turnoJugador].getSimbolo()
+							+ " pierde " + jugadores[turnoJugador].getDinero() + " dineros \n");
+					jugadores[turnoJugador].setDinero(0);
+				} else {
+					sb.append(jugadores[turnoJugador].getSimbolo() + " sa morio \n");
+					tablero[jugadores[turnoJugador].getFil()][jugadores[turnoJugador].getCol()] = vacio;// cambiarfilcol
 					numJugadores--;
 				}
 			}
