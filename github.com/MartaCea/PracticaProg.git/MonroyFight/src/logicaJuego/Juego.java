@@ -142,114 +142,120 @@ public class Juego {
 		int fil, col;
 		int gema = 0, money = 0, rocas = 0, pozos = 0, pociones = 0;
 
-		for (int i = 0; i < tablero.length; i++) {
-			for (int j = 0; j < tablero[i].length; j++) {
-				tablero[i][j] = vacio;
+		if (!iniTablero) {
+
+			for (int i = 0; i < tablero.length; i++) {
+				for (int j = 0; j < tablero[i].length; j++) {
+					tablero[i][j] = vacio;
+				}
 			}
-		}
 
-		// busca una posicion aleatoria para colocar las gemas
-		do {
-			fil = (int) (Math.random() * 10);
-			col = (int) (Math.random() * 10);
-			tablero[fil][col] = gemas;
-			gema++;
-		} while (gema <= Constantes.NUM_GEMAS);
-
-		// busca una posicion aleatoria para colocar las rocas
-		do {
-			fil = (int) (Math.random() * 10);
-			col = (int) (Math.random() * 10);
-			tablero[fil][col] = roca;
-			rocas++;
-		} while (rocas <= Constantes.NUM_ROCAS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
-				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
-
-		// busca una posicion aleatoria para colocar los pozos
-		do {
-			fil = (int) (Math.random() * 10);
-			col = (int) (Math.random() * 10);
-			tablero[fil][col] = pozo;
-			pozos++;
-		} while (pozos <= Constantes.POZOS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(roca)
-				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
-
-		// busca una posicion aleatoria para colocar las pociones
-		do {
-			fil = (int) (Math.random() * 10);
-			col = (int) (Math.random() * 10);
-			tablero[fil][col] = pocion;
-			pociones++;
-		} while (pociones <= Constantes.NUM_POCIONES || tablero[fil][col].equals(gemas)
-				|| tablero[fil][col].equals(pozo) || tablero[fil][col].equals(roca)
-				|| tablero[fil][col].equals(dinero));
-
-		// busca una posicion aleatoria para colocar las monedas
-		do {
-			fil = (int) (Math.random() * 10);
-			col = (int) (Math.random() * 10);
-			tablero[fil][col] = dinero;
-			money++;
-		} while (money <= Constantes.NUM_DINERO || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
-				|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca));
-
-		// Elemento[] player = new Elemento[numJugadores];
-		for (int i = 0; i < numJugadores; i++) {
-			// player[i] = jugadores[i];
+			// busca una posicion aleatoria para colocar las gemas
 			do {
 				fil = (int) (Math.random() * 10);
 				col = (int) (Math.random() * 10);
-				tablero[fil][col] = jugadores[i];
-				jugadores[i].setFil(fil);
-				jugadores[i].setCol(col);
-			} while (tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
-					|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca)
+				tablero[fil][col] = gemas;
+				gema++;
+			} while (gema <= Constantes.NUM_GEMAS);
+
+			// busca una posicion aleatoria para colocar las rocas
+			do {
+				fil = (int) (Math.random() * 10);
+				col = (int) (Math.random() * 10);
+				tablero[fil][col] = roca;
+				rocas++;
+			} while (rocas <= Constantes.NUM_ROCAS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
+					|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
+
+			// busca una posicion aleatoria para colocar los pozos
+			do {
+				fil = (int) (Math.random() * 10);
+				col = (int) (Math.random() * 10);
+				tablero[fil][col] = pozo;
+				pozos++;
+			} while (pozos <= Constantes.POZOS || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(roca)
+					|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(dinero));
+
+			// busca una posicion aleatoria para colocar las pociones
+			do {
+				fil = (int) (Math.random() * 10);
+				col = (int) (Math.random() * 10);
+				tablero[fil][col] = pocion;
+				pociones++;
+			} while (pociones <= Constantes.NUM_POCIONES || tablero[fil][col].equals(gemas)
+					|| tablero[fil][col].equals(pozo) || tablero[fil][col].equals(roca)
 					|| tablero[fil][col].equals(dinero));
-		}
-		int x = 0;
-		for (int i = 0; i < tablero.length; i++) {
-			sb.append("----------------------------------------" + "\n");
-			for (int j = 0; j < tablero[i].length; j++) {
-				while (x < numJugadores && !encontrado) {
-					if (tablero[i][j].equals(jugadores[x])) {
-						sb.append(" " + Constantes.getJugadoresLetra(x) + " |");
-						encontrado = true;
+
+			// busca una posicion aleatoria para colocar las monedas
+			do {
+				fil = (int) (Math.random() * 10);
+				col = (int) (Math.random() * 10);
+				tablero[fil][col] = dinero;
+				money++;
+			} while (money <= Constantes.NUM_DINERO || tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
+					|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca));
+
+			// Elemento[] player = new Elemento[numJugadores];
+			for (int i = 0; i < numJugadores; i++) {
+				// player[i] = jugadores[i];
+				do {
+					fil = (int) (Math.random() * 10);
+					col = (int) (Math.random() * 10);
+					tablero[fil][col] = jugadores[i];
+					jugadores[i].setFil(fil);
+					jugadores[i].setCol(col);
+				} while (tablero[fil][col].equals(gemas) || tablero[fil][col].equals(pozo)
+						|| tablero[fil][col].equals(pocion) || tablero[fil][col].equals(roca)
+						|| tablero[fil][col].equals(dinero));
+			}
+			int x = 0;
+			for (int i = 0; i < tablero.length; i++) {
+				sb.append("----------------------------------------" + "\n");
+				for (int j = 0; j < tablero[i].length; j++) {
+					while (x < numJugadores && !encontrado) {
+						if (tablero[i][j].equals(jugadores[x])) {
+							sb.append(" " + Constantes.getJugadoresLetra(x) + " |");
+							encontrado = true;
+						}
+						x++;
 					}
-					x++;
-				}
-				if (!encontrado) {
-					x = 0;
-					if (tablero[i][j].equals(gemas)) {
-						sb.append(" " + gemas.getSimbolo() + " |");
-					} else {
-						if (tablero[i][j].equals(roca)) {
-							sb.append(" " + roca.getSimbolo() + " |");
+					if (!encontrado) {
+						x = 0;
+						if (tablero[i][j].equals(gemas)) {
+							sb.append(" " + gemas.getSimbolo() + " |");
 						} else {
-							if (tablero[i][j].equals(pozo)) {
-								sb.append(" " + pozo.getSimbolo() + " |");
+							if (tablero[i][j].equals(roca)) {
+								sb.append(" " + roca.getSimbolo() + " |");
 							} else {
-								if (tablero[i][j].equals(pocion)) {
-									sb.append(" " + pocion.getSimbolo() + " |");
+								if (tablero[i][j].equals(pozo)) {
+									sb.append(" " + pozo.getSimbolo() + " |");
 								} else {
-									if (tablero[i][j].equals(dinero)) {
-										sb.append(" " + dinero.getSimbolo() + " |");
-									}else {
-										sb.append(" " + vacio.getSimbolo() + " |");
+									if (tablero[i][j].equals(pocion)) {
+										sb.append(" " + pocion.getSimbolo() + " |");
+									} else {
+										if (tablero[i][j].equals(dinero)) {
+											sb.append(" " + dinero.getSimbolo() + " |");
+										} else {
+											sb.append(" " + vacio.getSimbolo() + " |");
+										}
 									}
 								}
+
 							}
-							
+
 						}
-						
+
+					} else {
+						encontrado = false;
 					}
-					
-				} else {
-					encontrado = false;
 				}
+				sb.append("\n");
 			}
-			sb.append("\n");
+
+		}else {
+			iniTablero = true;
 		}
-		iniTablero = true;
+		
 		return sb.toString();
 	}
 
